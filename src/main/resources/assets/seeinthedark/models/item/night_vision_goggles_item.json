@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "seeinthedark:item/night_vision_goggles_item"
+  }
+}

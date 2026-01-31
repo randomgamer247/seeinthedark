@@ -1,0 +1,41 @@
+{
+  "text.seeinthedark.energy_unit_FE": "FE",
+  "text.seeinthedark.energy_unit_RF": "RF",
+
+  "itemGroup.seeinthedark": "See in the Dark",
+
+  "item.seeinthedark.night_vision_goggles": "Night Vision Goggles",
+  "item.seeinthedark.night_vision_goggles.keybind_tooltip": [
+    { "text": "Press ", "color": "gray" },
+    { "text": "\"",
+      "extra": [
+        { "keybind": "key.seeinthedark.toggle_key" },
+        { "text": "\"" }
+      ],
+      "color": "yellow"
+    },
+    { "text": " to toggle night vision", "color": "gray" }
+  ],
+  "item.seeinthedark.night_vision_goggles.toggle_on_tooltip": [{ "text": "ENABLED", "color": "dark_green", "italic": true }],
+  "item.seeinthedark.night_vision_goggles.toggle_off_tooltip": [{ "text": "DISABLED", "color": "dark_gray", "italic": true }],
+  "item.seeinthedark.night_vision_goggles.energy_tooltip": "Energy: %s / %s %s",
+  "item.seeinthedark.night_vision_goggles.energy_usage_tooltip": "Uses %s %s/t when enabled",
+  "item.seeinthedark.night_vision_goggles.toggle_on_message": "Night Vision Enabled",
+  "item.seeinthedark.night_vision_goggles.toggle_off_message": "Night Vision Disabled",
+
+  "seeinthedark.configuration.title": "See in the Dark Configs",
+  "seeinthedark.configuration.section.seeinthedark.common.toml": "See in the Dark Configs",
+  "seeinthedark.configuration.section.seeinthedark.common.toml.title": "See in the Dark Configs",
+  "seeinthedark.configuration.section.seeinthedark.server.toml": "See in the Dark Server Configs",
+  "seeinthedark.configuration.section.seeinthedark.server.toml.title": "See in the Dark Server Configs",
+  "seeinthedark.configuration.section.seeinthedark.client.toml": "See in the Dark Client Configs",
+  "seeinthedark.configuration.section.seeinthedark.client.toml.title": "See in the Dark Client Configs",
+  "seeinthedark.configuration.nightVisionMaxEnergy": "Night Vision Goggles Capacity",
+  "seeinthedark.configuration.nightVisionMaxEnergy.tooltip": "Night vision goggles energy capacity (requires world restart)",
+  "seeinthedark.configuration.nightVisionEnergyTransfer": "Night Vision Goggles Max Receive",
+  "seeinthedark.configuration.nightVisionEnergyTransfer.tooltip": "Night vision goggles energy receive per tick, affects max charging speed (requires world restart)",
+  "seeinthedark.configuration.nightVisionEnergyUse": "Night Vision Goggles Usage",
+  "seeinthedark.configuration.nightVisionEnergyUse.tooltip": "Night vision goggles energy usage per tick, set to 0 to allow night vision to be used indefinitely (requires world restart)",
+  "seeinthedark.configuration.energyUnitConfig": "Energy Unit",
+  "seeinthedark.configuration.energyUnitConfig.tooltip": "Energy unit setting for nostalgists, purely visual"
+}

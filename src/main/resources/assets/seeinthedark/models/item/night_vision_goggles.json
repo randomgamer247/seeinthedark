@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/handheld",
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "seeinthedark:item/night_vision_goggles_item"
+  },
+  "perspectives": {
+    "head": {
+      "parent": "seeinthedark:item/night_vision_goggles_model"
+    }
+  }
+}

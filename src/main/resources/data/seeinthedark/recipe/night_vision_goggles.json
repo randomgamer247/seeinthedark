@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": {
+      "tag": "c:storage_blocks/redstone"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "G": {
+      "tag": "c:dusts/glowstone"
+    },
+    "P": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "L": {
+      "tag": "c:leathers"
+    },
+    "E": {
+      "tag": "c:gems/emerald"
+    }
+  },
+  "pattern": [
+    "ILI",
+    "GRG",
+    "PEP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "seeinthedark:night_vision_goggles",
+    "components": {
+      "seeinthedark:item_energy": 0,
+      "seeinthedark:item_enabled": false
+    }
+  }
+}
