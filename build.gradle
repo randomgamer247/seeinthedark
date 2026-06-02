@@ -28,6 +28,16 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url "https://maven.theillusivec4.top"
+            }
+        }
+        filter {
+            includeGroup "top.theillusivec4.curios"
+        }
+    }
 }
 
 base {
@@ -119,6 +129,9 @@ dependencies {
     localRuntime(
             implementation "curse.maven:charging-gadgets-399757:5615790"
     )
+
+    compileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
+    localRuntime "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

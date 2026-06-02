@@ -8,8 +8,8 @@ Coming soon
 ## Features:
 * Night Vision Goggles
   * Provides night vision when equipped and enabled
-  * Customizable power draw and capacity
-  * Curios support (Coming soon)
+  * Configurable power draw and capacity
+  * Optional Curios support
 * Powered Invisibility Cloak
   * Coming soon
 * Fall Damage Absorber

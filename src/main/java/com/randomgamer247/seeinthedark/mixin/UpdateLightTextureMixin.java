@@ -4,11 +4,8 @@ import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
-import com.randomgamer247.seeinthedark.SeeintheDark;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.randomgamer247.seeinthedark.Config.NIGHT_VISION_GOGGLES_ENERGY_USAGE;
+import static com.randomgamer247.seeinthedark.SeeintheDark.NIGHT_VISION_SCALE_ATTRIBUTE;
 
 /**
  * Mixin targeting Minecraft's lightmap calculation.
@@ -38,9 +35,6 @@ public class UpdateLightTextureMixin {
             at = @At(value = "MIXINEXTRAS:EXPRESSION",shift = At.Shift.AFTER)
     )
     private void modifyLightTextureLocalF5(CallbackInfo ci, @Local(ordinal = 7) LocalFloatRef f5) {
-        ItemStack stack = this.minecraft.player.getItemBySlot(EquipmentSlot.HEAD);
-        if (stack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, false) && stack.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0) >= NIGHT_VISION_GOGGLES_ENERGY_USAGE.get()) {
-            f5.set(Math.max(f5.get(), 1.0F));
-        }
+        f5.set(Math.max(f5.get(), (float)this.minecraft.player.getAttributeValue(NIGHT_VISION_SCALE_ATTRIBUTE)));
     }
 }

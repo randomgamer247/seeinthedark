@@ -6,6 +6,7 @@ import com.randomgamer247.seeinthedark.network.NightVisionToggleData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -14,8 +15,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.api.distmarker.Dist;
@@ -121,26 +125,71 @@ public class NightVisionGogglesItem extends Item implements Equipable {
         // Head slot is apparently 39 and not EquipmentSlot.HEAD?
         if (level.isClientSide() || slotId != 39) return;
 
+        this.equippedServerSideTick(stack);
+    }
+
+    public void equippedServerSideTick(@NotNull ItemStack stack) {
+        // This would not work if I wanted the night vision goggles to have any other attribute modifiers
+        // Wish the ItemAttributeModifiers class had a simple way to remove a specific attribute modifier...
+        ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         if (stack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, false)) {
-            stack.update(SeeintheDark.ITEM_ENERGY_COMPONENT,
-                    0,
-                    energy -> Math.max(energy - Config.NIGHT_VISION_GOGGLES_ENERGY_USAGE.get(), 0)
-            );
+            int usage = Config.NIGHT_VISION_GOGGLES_ENERGY_USAGE.get();
+            int reducedEnergy = Math.max(stack.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0) - usage, 0);
+            stack.set(SeeintheDark.ITEM_ENERGY_COMPONENT, reducedEnergy);
+
+            if (modifiers != ItemAttributeModifiers.EMPTY && reducedEnergy < usage)
+                this.RemoveNightVisionModifiers(stack);
+            else if (modifiers == ItemAttributeModifiers.EMPTY && reducedEnergy >= usage)
+                this.SetNightVisionModifiers(stack);
+            return;
         }
+        if (modifiers != ItemAttributeModifiers.EMPTY) this.RemoveNightVisionModifiers(stack);
+    }
+
+    public void SetNightVisionModifiers(ItemStack stack) {
+        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, makeNightVisionScaleModifier(1.0));
+    }
+
+    public void RemoveNightVisionModifiers(ItemStack stack) {
+        stack.remove(DataComponents.ATTRIBUTE_MODIFIERS);
+    }
+
+    public static ItemAttributeModifiers makeNightVisionScaleModifier(double modifier) {
+        return ItemAttributeModifiers.builder().add(
+                SeeintheDark.NIGHT_VISION_SCALE_ATTRIBUTE,
+                new AttributeModifier(
+                        SeeintheDark.NIGHT_VISION_GOGGLES_SCALE_MODIFIER_RESOURCE_LOCATION,
+                        modifier,
+                        AttributeModifier.Operation.ADD_VALUE
+                ),
+                EquipmentSlotGroup.HEAD
+        ).build().withTooltip(false);
+    }
+
+    public ItemStack getEquipped(Player player) {
+        ItemStack itemStack = player.getItemBySlot(EquipmentSlot.HEAD);
+        return (itemStack.getItem().equals(SeeintheDark.NIGHT_VISION_GOGGLES_ITEM.get())) ?
+                itemStack :
+                ItemStack.EMPTY;
+    }
+
+    // This exists because I want to override getEquipped, but I also need to call it from static contexts...
+    public static ItemStack getEquippedStatic(Player player) {
+        return ((NightVisionGogglesItem)SeeintheDark.NIGHT_VISION_GOGGLES_ITEM.get()).getEquipped(player);
     }
 
     // Toggle the enabled component when the button press packet is received
     public static void handleToggleData(final NightVisionToggleData data, final IPayloadContext context) {
-        ItemStack itemStack = context.player().getItemBySlot(EquipmentSlot.HEAD);
-        if (itemStack.getItem().equals(SeeintheDark.NIGHT_VISION_GOGGLES_ITEM.get())) {
-            boolean newValue = data.shouldEnable();
-            // Change the component
-            itemStack.set(SeeintheDark.ITEM_ENABLED_COMPONENT, newValue);
-            // Display a message
-            context.player().displayClientMessage(Component.translatable(
-                    newValue ? "item.seeinthedark.night_vision_goggles.toggle_on_message" : "item.seeinthedark.night_vision_goggles.toggle_off_message"
-            ), true);
-        }
+        ItemStack itemStack = getEquippedStatic(context.player());
+        if (itemStack.isEmpty()) return;
+
+        boolean newValue = data.shouldEnable();
+        // Change the component
+        itemStack.set(SeeintheDark.ITEM_ENABLED_COMPONENT, newValue);
+        // Display a message
+        context.player().displayClientMessage(Component.translatable(
+                newValue ? "item.seeinthedark.night_vision_goggles.toggle_on_message" : "item.seeinthedark.night_vision_goggles.toggle_off_message"
+        ), true);
     }
 
     /**
@@ -154,10 +203,10 @@ public class NightVisionGogglesItem extends Item implements Equipable {
             while (SeeintheDark.TOGGLE_KEY.get().consumeClick()) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null) {
-                    ItemStack itemStack = player.getItemBySlot(EquipmentSlot.HEAD);
-                    if (itemStack.getItem().equals(SeeintheDark.NIGHT_VISION_GOGGLES_ITEM.get())) {
-                        PacketDistributor.sendToServer(new NightVisionToggleData(!itemStack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, true)));
-                    }
+                    ItemStack itemStack = getEquippedStatic(player);
+                    if (itemStack.isEmpty()) return;
+
+                    PacketDistributor.sendToServer(new NightVisionToggleData(!itemStack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, true)));
                 }
             }
         }

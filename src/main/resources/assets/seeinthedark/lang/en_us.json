@@ -23,6 +23,8 @@
   "item.seeinthedark.night_vision_goggles.toggle_on_message": "Night Vision Enabled",
   "item.seeinthedark.night_vision_goggles.toggle_off_message": "Night Vision Disabled",
 
+  "attributes.seeinthedark.night_vision_scale": "Night Vision",
+
   "seeinthedark.configuration.title": "See in the Dark Configs",
   "seeinthedark.configuration.section.seeinthedark.common.toml": "See in the Dark Configs",
   "seeinthedark.configuration.section.seeinthedark.common.toml.title": "See in the Dark Configs",

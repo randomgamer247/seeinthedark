@@ -2,19 +2,30 @@ package com.randomgamer247.seeinthedark;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
+import com.randomgamer247.seeinthedark.compat.curios.client.CuriosRendererRegistration;
+import com.randomgamer247.seeinthedark.compat.curios.item.NightVisionGogglesCurioItem;
 import com.randomgamer247.seeinthedark.item.NightVisionGogglesItem;
 import com.randomgamer247.seeinthedark.network.NightVisionToggleData;
 import com.randomgamer247.seeinthedark.util.GogglesKeyConflictContext;
+import com.randomgamer247.seeinthedark.util.ItemEnergyStorage;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.slf4j.Logger;
@@ -48,12 +59,22 @@ public class SeeintheDark {
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
-    // Create a key mapping
+    // Curios compatibility
+    public static final boolean CURIOS_LOADED = ModList.get().isLoaded("curios");
+
+    private static final class GuardedCuriosCompatAccess {
+        static Item makeNightVisionGogglesCurioItem(Item.Properties props) {
+            return new NightVisionGogglesCurioItem(props);
+        }
+    }
+
+
+    // Create a key mapping:
     public static final Lazy<KeyMapping> TOGGLE_KEY = Lazy.of(() ->
             new KeyMapping(
                     "key.seeinthedark.toggle_key",
                     new GogglesKeyConflictContext(),
-                    InputConstants.UNKNOWN,
+                    InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_V),
                     "key.categories.misc"
             )
     );
@@ -67,13 +88,19 @@ public class SeeintheDark {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     // Create a Deferred register for data components
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
+    // Create a Deferred register for attributes
+    public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, MODID);
 
 
     // Create items:
-    public static final DeferredItem<Item> NIGHT_VISION_GOGGLES_ITEM = ITEMS.registerItem("night_vision_goggles", NightVisionGogglesItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> NIGHT_VISION_GOGGLES_ITEM = ITEMS.registerItem("night_vision_goggles",
+            props -> CURIOS_LOADED ?
+                GuardedCuriosCompatAccess.makeNightVisionGogglesCurioItem(props) :
+                new NightVisionGogglesItem(props),
+            new Item.Properties().stacksTo(1));
 
 
-    //Create data components:
+    // Create data components:
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ITEM_ENERGY_COMPONENT = DATA_COMPONENTS.registerComponentType(
             "item_energy",
             builder -> builder
@@ -88,13 +115,20 @@ public class SeeintheDark {
     );
 
 
-    // Creates a creative tab with the id "seeinthedark:example_tab" for the example item, that is placed after the combat tab
+    // Create attributes:
+    public static final Holder<Attribute> NIGHT_VISION_SCALE_ATTRIBUTE = ATTRIBUTES.register("night_vision_scale", () -> new RangedAttribute(
+            "attributes.seeinthedark.night_vision_scale", 0, 0, 1.0
+    ).setSyncable(true));
+    public static final ResourceLocation NIGHT_VISION_GOGGLES_SCALE_MODIFIER_RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(MODID, "night_vision_goggles_scale_modifier");
+
+
+            // Creates a creative tab with the id "seeinthedark:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SITD_TAB = CREATIVE_MODE_TABS.register("sitd_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.seeinthedark")) //The language key for the title of your CreativeModeTab
-            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .icon(() -> NIGHT_VISION_GOGGLES_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(NIGHT_VISION_GOGGLES_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(NIGHT_VISION_GOGGLES_ITEM.get());
             }).build());
 
 
@@ -113,6 +147,14 @@ public class SeeintheDark {
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
+        ATTRIBUTES.register(modEventBus);
+
+        // Optionally register curios capabilities
+        if (ModList.get().isLoaded("curios")){
+            LOGGER.info("Curios was detected, registering SeeInTheDark curio renderers.");
+            modEventBus.addListener(CuriosRendererRegistration::registerCuriosRenderers);
+        }
+
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SPEC_SERVER);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC_CLIENT);
@@ -123,7 +165,7 @@ public class SeeintheDark {
     }
 
     /**
-     * A class containing events which need to be handled on any side
+     * A class for generic seeinthedark events
      */
     @EventBusSubscriber(modid = MODID)
     public static class GenericModEvents {
@@ -153,6 +195,12 @@ public class SeeintheDark {
                     NightVisionToggleData.STREAM_CODEC,
                     NightVisionGogglesItem::handleToggleData
             );
+        }
+
+        // Add custom attributes
+        @SubscribeEvent
+        public static void modifyDefaultAttributes(EntityAttributeModificationEvent event) {
+            event.add(EntityType.PLAYER, NIGHT_VISION_SCALE_ATTRIBUTE);
         }
     }
 

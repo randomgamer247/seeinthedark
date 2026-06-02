@@ -1,5 +1,6 @@
-package com.randomgamer247.seeinthedark;
+package com.randomgamer247.seeinthedark.util;
 
+import com.randomgamer247.seeinthedark.SeeintheDark;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;

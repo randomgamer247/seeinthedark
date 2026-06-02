@@ -1,6 +1,7 @@
 package com.randomgamer247.seeinthedark.util;
 
 import com.randomgamer247.seeinthedark.SeeintheDark;
+import com.randomgamer247.seeinthedark.item.NightVisionGogglesItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,10 +17,10 @@ public class GogglesKeyConflictContext implements IKeyConflictContext {
     public boolean isActive() {
         LocalPlayer player = Minecraft.getInstance().player;
 
-        if (player != null && player.getItemBySlot(EquipmentSlot.HEAD).getItem().equals(SeeintheDark.NIGHT_VISION_GOGGLES_ITEM.get()))
-            return true;
+        if (player != null && !NightVisionGogglesItem.getEquippedStatic(player).isEmpty())
+            return Minecraft.getInstance().screen == null;
 
-        return Minecraft.getInstance().screen != null;
+        return false;
     }
 
     @Override
