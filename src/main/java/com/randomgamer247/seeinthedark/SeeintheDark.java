@@ -14,6 +14,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
@@ -90,7 +91,8 @@ public class SeeintheDark {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
     // Create a Deferred register for attributes
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, MODID);
-
+    // Create a Deferred Register for sound events
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
 
     // Create items:
     public static final DeferredItem<Item> NIGHT_VISION_GOGGLES_ITEM = ITEMS.registerItem("night_vision_goggles",
@@ -122,6 +124,17 @@ public class SeeintheDark {
     public static final ResourceLocation NIGHT_VISION_GOGGLES_SCALE_MODIFIER_RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(MODID, "night_vision_goggles_scale_modifier");
 
 
+    // Create sound events:
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIGHT_VISION_GOGGLES_ENABLE_SOUND = SOUND_EVENTS.register(
+            "night_vision_goggles_enable",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "night_vision_goggles_enable"))
+    );
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIGHT_VISION_GOGGLES_DISABLE_SOUND = SOUND_EVENTS.register(
+            "night_vision_goggles_disable",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "night_vision_goggles_disable"))
+    );
+
+
             // Creates a creative tab with the id "seeinthedark:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SITD_TAB = CREATIVE_MODE_TABS.register("sitd_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.seeinthedark")) //The language key for the title of your CreativeModeTab
@@ -149,9 +162,11 @@ public class SeeintheDark {
 
         ATTRIBUTES.register(modEventBus);
 
+        SOUND_EVENTS.register(modEventBus);
+
         // Optionally register curios capabilities
         if (ModList.get().isLoaded("curios")){
-            LOGGER.info("Curios was detected, registering SeeInTheDark curio renderers.");
+            //LOGGER.info("Curios was detected, registering SeeInTheDark curio renderers.");
             modEventBus.addListener(CuriosRendererRegistration::registerCuriosRenderers);
         }
 

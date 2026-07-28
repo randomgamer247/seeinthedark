@@ -25,6 +25,9 @@
 
   "attributes.seeinthedark.night_vision_scale": "Night Vision",
 
+  "subtitles.seeinthedark.night_vision_enable": "Coil whine rising in pitch",
+  "subtitles.seeinthedark.night_vision_disable": "Coil whine falling in pitch",
+
   "seeinthedark.configuration.title": "See in the Dark Configs",
   "seeinthedark.configuration.section.seeinthedark.common.toml": "See in the Dark Configs",
   "seeinthedark.configuration.section.seeinthedark.common.toml.title": "See in the Dark Configs",

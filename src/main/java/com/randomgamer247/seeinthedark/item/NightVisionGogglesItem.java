@@ -3,6 +3,7 @@ package com.randomgamer247.seeinthedark.item;
 import com.randomgamer247.seeinthedark.Config;
 import com.randomgamer247.seeinthedark.SeeintheDark;
 import com.randomgamer247.seeinthedark.network.NightVisionToggleData;
+import com.randomgamer247.seeinthedark.util.ReadableIntToStrFormatter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -63,12 +64,10 @@ public class NightVisionGogglesItem extends Item implements Equipable {
             tooltipComponents.add(Component.translatable(
                     "item.seeinthedark.night_vision_goggles.energy_tooltip",
                     Component.literal(
-                            stack.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0).toString()
+                            ReadableIntToStrFormatter.format(stack.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0), 2)
                     ).withColor(0xAA0000),
                     Component.literal(
-                            Integer.toString(
-                                    Objects.requireNonNull(stack.getCapability(Capabilities.EnergyStorage.ITEM)).getMaxEnergyStored()
-                            )
+                            ReadableIntToStrFormatter.format(Objects.requireNonNull(stack.getCapability(Capabilities.EnergyStorage.ITEM)).getMaxEnergyStored(), 2)
                     ).withColor(0xAA0000),
                     Component.translatable(
                             Config.ENERGY_UNIT_VISUAL.get().unit_key
@@ -206,7 +205,16 @@ public class NightVisionGogglesItem extends Item implements Equipable {
                     ItemStack itemStack = getEquippedStatic(player);
                     if (itemStack.isEmpty()) return;
 
-                    PacketDistributor.sendToServer(new NightVisionToggleData(!itemStack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, true)));
+                    Boolean enabledComponent = itemStack.getOrDefault(SeeintheDark.ITEM_ENABLED_COMPONENT, true);
+                    PacketDistributor.sendToServer(new NightVisionToggleData(!enabledComponent));
+                    // Play a sound
+                    // I suppose it would be better to wait for the server to determine whether the goggles state was
+                    // actually toggled but whatever
+                    player.playSound(
+                            enabledComponent ? SeeintheDark.NIGHT_VISION_GOGGLES_DISABLE_SOUND.get() : SeeintheDark.NIGHT_VISION_GOGGLES_ENABLE_SOUND.get(),
+                            0.5f,
+                            1.0f
+                    );
                 }
             }
         }

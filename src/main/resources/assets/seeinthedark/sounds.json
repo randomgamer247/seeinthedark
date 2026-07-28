@@ -1,0 +1,14 @@
+{
+  "night_vision_goggles_enable": {
+    "subtitle": "subtitles.seeinthedark.night_vision_enable",
+    "sounds": [
+      "seeinthedark:night_vision_goggles_enable"
+    ]
+  },
+  "night_vision_goggles_disable": {
+    "subtitle": "subtitles.seeinthedark.night_vision_disable",
+    "sounds": [
+      "seeinthedark:night_vision_goggles_disable"
+    ]
+  }
+}
