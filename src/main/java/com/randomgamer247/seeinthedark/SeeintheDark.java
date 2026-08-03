@@ -3,9 +3,11 @@ package com.randomgamer247.seeinthedark;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
 import com.randomgamer247.seeinthedark.compat.curios.client.CuriosRendererRegistration;
+import com.randomgamer247.seeinthedark.item.FluxBoltItem;
 import com.randomgamer247.seeinthedark.compat.curios.item.NightVisionGogglesCurioItem;
 import com.randomgamer247.seeinthedark.item.NightVisionGogglesItem;
 import com.randomgamer247.seeinthedark.network.NightVisionToggleData;
+import com.randomgamer247.seeinthedark.util.DebugItemEnergyStorage;
 import com.randomgamer247.seeinthedark.util.GogglesKeyConflictContext;
 import com.randomgamer247.seeinthedark.util.ItemEnergyStorage;
 import net.minecraft.client.KeyMapping;
@@ -100,6 +102,9 @@ public class SeeintheDark {
                 GuardedCuriosCompatAccess.makeNightVisionGogglesCurioItem(props) :
                 new NightVisionGogglesItem(props),
             new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> FLUX_BOLT_ITEM = ITEMS.registerItem("flux_bolt",
+            FluxBoltItem::new,
+            new Item.Properties().stacksTo(1));
 
 
     // Create data components:
@@ -142,6 +147,7 @@ public class SeeintheDark {
             .icon(() -> NIGHT_VISION_GOGGLES_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(NIGHT_VISION_GOGGLES_ITEM.get());
+                output.accept(FLUX_BOLT_ITEM.get());
             }).build());
 
 
@@ -193,12 +199,17 @@ public class SeeintheDark {
             event.modify(NIGHT_VISION_GOGGLES_ITEM.get(), builder ->
                     builder.set(ITEM_ENABLED_COMPONENT.get(), false)
             );
+
+            event.modify(FLUX_BOLT_ITEM.get(), builder ->
+                    builder.set(ITEM_ENERGY_COMPONENT.get(), 0)
+            );
         }
 
         // Register night vision goggles to use the ItemEnergyStorage energy storage capability implementation
         @SubscribeEvent
         public static void registerCapabilities(RegisterCapabilitiesEvent event) {
             event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, context) -> new ItemEnergyStorage(stack, NIGHT_VISION_GOGGLES_MAX_ENERGY, NIGHT_VISION_GOGGLES_ENERGY_RECEIVE), NIGHT_VISION_GOGGLES_ITEM.get());
+            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, context) -> new DebugItemEnergyStorage(stack, 1600000, 10000), FLUX_BOLT_ITEM.get());
         }
 
         // Register a payload handler to transmit night vision goggles toggle key presses to the server

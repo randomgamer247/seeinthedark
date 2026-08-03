@@ -22,6 +22,9 @@
   "item.seeinthedark.night_vision_goggles.energy_usage_tooltip": "Uses %s %s/t when enabled",
   "item.seeinthedark.night_vision_goggles.toggle_on_message": "Night Vision Enabled",
   "item.seeinthedark.night_vision_goggles.toggle_off_message": "Night Vision Disabled",
+  "item.seeinthedark.flux_bolt": "Flux Bolt",
+  "item.seeinthedark.flux_bolt.energy_tooltip": "Energy: %s / %s %s",
+  "item.seeinthedark.flux_bolt.energy_usage_tooltip": "Uses %s %s per shot",
 
   "attributes.seeinthedark.night_vision_scale": "Night Vision",
 
