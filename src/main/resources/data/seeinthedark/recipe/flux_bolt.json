@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": {
+      "tag": "c:storage_blocks/redstone"
+    },
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "C": {
+      "tag": "c:ingots/copper"
+    }
+  },
+  "pattern": [
+    "C",
+    "B",
+    "R"
+  ],
+  "result": {
+    "count": 1,
+    "id": "seeinthedark:flux_bolt",
+    "components": {
+      "seeinthedark:item_energy": 0
+    }
+  }
+}
