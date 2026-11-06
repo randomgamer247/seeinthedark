@@ -2,15 +2,17 @@ package com.randomgamer247.seeinthedark;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
+import com.randomgamer247.seeinthedark.client.FluxBoltRenderer;
 import com.randomgamer247.seeinthedark.compat.curios.client.CuriosRendererRegistration;
+import com.randomgamer247.seeinthedark.entity.FluxBoltEntity;
 import com.randomgamer247.seeinthedark.item.FluxBoltItem;
 import com.randomgamer247.seeinthedark.compat.curios.item.NightVisionGogglesCurioItem;
 import com.randomgamer247.seeinthedark.item.NightVisionGogglesItem;
 import com.randomgamer247.seeinthedark.network.NightVisionToggleData;
-import com.randomgamer247.seeinthedark.util.DebugItemEnergyStorage;
 import com.randomgamer247.seeinthedark.util.GogglesKeyConflictContext;
 import com.randomgamer247.seeinthedark.util.ItemEnergyStorage;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.entity.TippableArrowRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,6 +20,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.api.distmarker.Dist;
@@ -25,6 +28,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
@@ -49,6 +53,8 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 import static com.randomgamer247.seeinthedark.Config.*;
 
@@ -94,6 +100,9 @@ public class SeeintheDark {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, MODID);
     // Create a Deferred Register for sound events
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
+    // Create a Deferred Register entity types
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MODID);
+
 
     // Create items:
     public static final DeferredItem<Item> NIGHT_VISION_GOGGLES_ITEM = ITEMS.registerItem("night_vision_goggles",
@@ -139,6 +148,17 @@ public class SeeintheDark {
     );
 
 
+    // Create entity types:
+    public static final Supplier<EntityType<FluxBoltEntity>> FLUX_BOLT_ENTITY_TYPE = ENTITY_TYPES.register(
+            "flux_bolt_entity",
+            () -> EntityType.Builder.<FluxBoltEntity>of(
+                    FluxBoltEntity::new,
+                    MobCategory.MISC
+            ).sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build(
+                    "flux_bolt_entity"
+            )
+    );
+
             // Creates a creative tab with the id "seeinthedark:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SITD_TAB = CREATIVE_MODE_TABS.register("sitd_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.seeinthedark")) //The language key for the title of your CreativeModeTab
@@ -168,6 +188,8 @@ public class SeeintheDark {
         ATTRIBUTES.register(modEventBus);
 
         SOUND_EVENTS.register(modEventBus);
+
+        ENTITY_TYPES.register(modEventBus);
 
         // Optionally register curios capabilities
         if (ModList.get().isLoaded("curios")){
@@ -238,6 +260,12 @@ public class SeeintheDark {
         @SubscribeEvent
         public static void registerBindings(RegisterKeyMappingsEvent event) {
             event.register(TOGGLE_KEY.get());
+        }
+
+        // Register entity renderers
+        @SubscribeEvent
+        public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(FLUX_BOLT_ENTITY_TYPE.get(), FluxBoltRenderer::new);
         }
     }
 }

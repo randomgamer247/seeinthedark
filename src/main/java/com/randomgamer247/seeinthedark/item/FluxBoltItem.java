@@ -2,6 +2,7 @@ package com.randomgamer247.seeinthedark.item;
 
 import com.randomgamer247.seeinthedark.Config;
 import com.randomgamer247.seeinthedark.SeeintheDark;
+import com.randomgamer247.seeinthedark.entity.FluxBoltEntity;
 import com.randomgamer247.seeinthedark.util.ReadableIntToStrFormatter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -73,7 +74,7 @@ public class FluxBoltItem extends ArrowItem {
 
     @Override
     public @NotNull AbstractArrow createArrow(@NotNull Level level, @NotNull ItemStack ammo, @NotNull LivingEntity shooter, @Nullable ItemStack weapon) {
-        return new Arrow(level, shooter, ItemStack.EMPTY, weapon);
+        return new FluxBoltEntity(level, shooter, weapon);
     }
 
     @Override
