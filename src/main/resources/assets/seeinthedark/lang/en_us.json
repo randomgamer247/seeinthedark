@@ -44,6 +44,12 @@
   "seeinthedark.configuration.nightVisionEnergyTransfer.tooltip": "Night vision goggles energy receive per tick, affects max charging speed (requires world restart)",
   "seeinthedark.configuration.nightVisionEnergyUse": "Night Vision Goggles Usage",
   "seeinthedark.configuration.nightVisionEnergyUse.tooltip": "Night vision goggles energy usage per tick, set to 0 to allow night vision to be used indefinitely (requires world restart)",
+  "seeinthedark.configuration.fluxBoltMaxEnergy": "Flux Bolt Capacity",
+  "seeinthedark.configuration.fluxBoltMaxEnergy.tooltip": "Flux bolt energy capacity (requires world restart)",
+  "seeinthedark.configuration.fluxBoltEnergyTransfer": "Flux Bolt Max Receive",
+  "seeinthedark.configuration.fluxBoltEnergyTransfer.tooltip": "Flux bolt energy receive per tick, affects max charging speed (requires world restart)",
+  "seeinthedark.configuration.fluxBoltEnergyUse": "Flux Bolt Usage",
+  "seeinthedark.configuration.fluxBoltEnergyUse.tooltip": "Flux bolt energy usage per shot, set to 0 to fire arrows for completely free (requires world restart)",
   "seeinthedark.configuration.energyUnitConfig": "Energy Unit",
   "seeinthedark.configuration.energyUnitConfig.tooltip": "Energy unit setting for nostalgists, purely visual"
 }

@@ -50,8 +50,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import static com.randomgamer247.seeinthedark.Config.NIGHT_VISION_GOGGLES_ENERGY_RECEIVE;
-import static com.randomgamer247.seeinthedark.Config.NIGHT_VISION_GOGGLES_MAX_ENERGY;
+import static com.randomgamer247.seeinthedark.Config.*;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(SeeintheDark.MODID)
@@ -209,7 +208,7 @@ public class SeeintheDark {
         @SubscribeEvent
         public static void registerCapabilities(RegisterCapabilitiesEvent event) {
             event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, context) -> new ItemEnergyStorage(stack, NIGHT_VISION_GOGGLES_MAX_ENERGY, NIGHT_VISION_GOGGLES_ENERGY_RECEIVE), NIGHT_VISION_GOGGLES_ITEM.get());
-            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, context) -> new DebugItemEnergyStorage(stack, 1600000, 10000), FLUX_BOLT_ITEM.get());
+            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, context) -> new ItemEnergyStorage(stack, FLUX_BOLT_MAX_ENERGY, FLUX_BOLT_ENERGY_RECEIVE), FLUX_BOLT_ITEM.get());
         }
 
         // Register a payload handler to transmit night vision goggles toggle key presses to the server

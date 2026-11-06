@@ -30,7 +30,6 @@ public class FluxBoltItem extends ArrowItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        // TODO: make this respect the correct config
         if (Config.NIGHT_VISION_GOGGLES_ENERGY_USAGE.get() > 0) {
             // Add energy status
             tooltipComponents.add(Component.translatable(
@@ -49,7 +48,7 @@ public class FluxBoltItem extends ArrowItem {
             tooltipComponents.add(Component.translatable(
                     "item.seeinthedark.flux_bolt.energy_usage_tooltip",
                     Component.literal(
-                            Integer.toString(8000) //TODO: use config value
+                            Integer.toString(Config.FLUX_BOLT_ENERGY_USAGE.get())
                     ).withColor(0xAA0000),
                     Component.translatable(
                             Config.ENERGY_UNIT_VISUAL.get().unit_key
@@ -84,7 +83,7 @@ public class FluxBoltItem extends ArrowItem {
         ammo.update(
                 SeeintheDark.ITEM_ENERGY_COMPONENT,
                 0,
-                energy -> Math.max(energy - 8000, 0) // TODO: config
+                energy -> Math.max(energy - Config.FLUX_BOLT_ENERGY_USAGE.get(), 0)
         );
         return true;
     }
@@ -95,8 +94,7 @@ public class FluxBoltItem extends ArrowItem {
         public static void LivingGetProjectileEvent(LivingGetProjectileEvent event) {
             ItemStack projectile = event.getProjectileItemStack();
             if (projectile.getItem().equals(SeeintheDark.FLUX_BOLT_ITEM.get())) {
-                // TODO: config
-                int remainingEnergy = projectile.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0) - 8000;
+                int remainingEnergy = projectile.getOrDefault(SeeintheDark.ITEM_ENERGY_COMPONENT, 0) - Config.FLUX_BOLT_ENERGY_USAGE.get();
                 if (remainingEnergy <= 0) event.setProjectileItemStack(ItemStack.EMPTY);
             }
         }
